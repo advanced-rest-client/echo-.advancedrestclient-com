@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Echo - Advanced REST Client</title>
+    <meta name="theme-color" content="#478fcc">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="ARC echo">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ARC echo">
+    <script src="/bower_components/webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="/bower_components/iron-meta/iron-meta.html">
+    <link rel="import" href="/src/echo-app/arc-echo-app.html">
+	</head>
+	<body>
+    <iron-meta type="oauth1" key="user" value='<%= JSON.stringify(user) %>'></iron-meta>
+    <iron-meta type="oauth1" key="client" value='<%= JSON.stringify(client) %>'></iron-meta>
+    <iron-meta type="oauth1" key="transaction" value="<%= transactionID %>"></iron-meta>
+    <arc-echo-app page="oauth1-dialog" dialog></arc-echo-app>
+	</body>
+</html>

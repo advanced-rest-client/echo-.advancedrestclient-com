@@ -1,0 +1,72 @@
+<!--
+@license
+Copyright 2016 The Advanced REST client authors <arc@mulesoft.com>
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../bower_components/iron-meta/iron-meta.html">
+<link rel="import" href="shared-styles.html">
+<dom-module id="oauth1-noredirect">
+  <template>
+    <style include="shared-styles">
+    :host {
+      display: block;
+      padding: 10px;
+    }
+    </style>
+    <h1>Missing redirect URL</h1>
+    <p class="reason">The redirect URL wasn't set with this request.</p>
+    <p>This is authorization result:</p>
+    <p>token: <code>[[token]]</code></p>
+    <p>verifier: <code>[[verifier]]</code></p>
+  </template>
+  <script>
+    /**
+     * A page that log in user to a test account in the application.
+     * It is used by the OAuth endpoint.
+     *
+     * @customElement
+     * @polymer
+     */
+    class Oauth1Noredirect extends Polymer.Element {
+      static get is() {
+        return 'oauth1-noredirect';
+      }
+
+      static get properties() {
+        return {
+          path: String,
+          verifier: Object,
+          token: Object
+        };
+      }
+
+      ready() {
+        super.ready();
+        if (!this.path) {
+          return;
+        }
+        var parts = this.path.split('/');
+        if (!parts[0]) {
+          parts.shift();
+        }
+        this.verifier = parts[0];
+        this.token = parts[1];
+      }
+    }
+
+    window.customElements.define(Oauth1Noredirect.is, Oauth1Noredirect);
+  </script>
+</dom-module>

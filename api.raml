@@ -1,0 +1,320 @@
+#%RAML 1.0
+title: Advanced REST Client Echo service API
+version: v1
+baseUri: https://echo.advancedrestclient.com/
+mediaType: [application/json]
+
+types:
+  BaseResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+        description: Wherther or not the operation succeeded.
+  AuthorizationResponse:
+    type: BaseResponse
+    properties:
+      authorized:
+        type: boolean
+        description: Wherther or not the user is authenticated.
+  OAuth1Response:
+    type: BaseResponse
+    properties:
+      oauthParams:
+        type: object
+        description: Map of received OAuth parameters.
+  OAuth1SignatureResponseError:
+    type: OAuth1Response
+    description: Response when signature test failed
+    properties:
+      reason:
+        type: string
+        description: A reason message about why the operation failed.
+  OAuth1Parameters:
+    type: object
+    properties:
+      oauth_signature_method:
+        description: A method used to generate the signature.
+        displayName: Signature method
+        enum: [PLAINTEXT, HMAC-SHA1]
+        default: HMAC-SHA1
+      oauth_consumer_key:
+        type: string
+        displayName: Consumer key
+        description: A consumer key used to generate the signature
+      oauth_signature:
+        type: string
+        description: Generated signature.
+        displayName: Signature
+      oauth_consumer_secret:
+        type: string
+        displayName: Consumer secret
+        description: |
+          A consumer secret used to generate the signature.
+          This parameter is not a part of OAuth 1 spec and normally do not
+          appear in the query string or body. It only purpose is to generate the
+          signature to compare.
+        required: false
+      oauth_token:
+        type: string
+        displayName: Token
+        required: false
+        description: |
+          A token used to generate the signature. Should not be set otherwise.
+      oauth_callback:
+        type: string
+        required: false
+        description: |
+          A callback URL used with OAuth parameters.
+        displayName: Callback
+      oauth_timestamp:
+        type: number
+        description: Timestamp of the signatire
+        required: false
+        displayName: Timestamp
+      oauth_nonce:
+        required: false
+        type: string
+        description: OAuth 1 nonce
+        displayName: Nonce
+      oauth_version:
+        type: number
+        required: false
+        default: 1.0
+        description: |
+          This should be set only if it was used to generate the signature.
+        displayName: Version
+  CookieList:
+    type: object
+    description: |
+      A list of cookies. Keys are cookies `name`s and values are cookies
+      `value`s.
+  CookieListResponse:
+    type: [BaseResponse, CookieList]
+/auth:
+  description: |
+    An endpoint to test different authorization methods.
+
+    It provides endpoint to test common authorization methods like basic, NTLM, OAuth 1.
+
+    **Disclosure**: The application (server) do not stores any data in any way (permament store, cache, logs).
+    For query parameters some information may be stored in server logs. Application nor the Owner are not using this information
+    in any way, and this information is considered confidential.
+  /basic/{username}/{password}:
+    description: |
+      Simulates a basic authorization by sending `www-authenticate` header to browser with `Basic` and realm values.
+      The `username` and `password` are set as URI parameters
+    uriParameters:
+      username:
+        type: string
+        default: user
+        description: |
+          The username to use to chanlenge the user.
+          By default it is `user`. This parameter may be ommited but also `password` should be omnited.
+        example: auth-user
+        required: false
+      password:
+        type: string
+        default: passwd
+        description: |
+          The password to use to chanlenge the user.
+          By default it is `passwd`. This parameter may be ommited.
+        example: my!Passw0rd
+        required: false
+    get:
+      description: |
+        Challenges the user with Basic authorization.
+        By default the `username` is `user` and `password` is `passwd`.
+      headers:
+        Authorization:
+          description: Basic authorization header. If not set then it will chalange the user for username and password.
+          required: false
+          pattern: Basic\s[a-zA-Z0-9=]+
+          example: Basic dGVzdDp0ZXN0
+      responses:
+        401:
+          description: |
+            Returned when authorization token is not set or is containing wrong
+            token data.
+          headers:
+            WWW-Authenticate:
+              description: Authorization chalenge header.
+        200:
+          description: |
+            The user has been successfully authenticated.
+          body:
+            application/json:
+              type: AuthorizationResponse
+  /oauth1:
+    description: |
+      Simulates a OAuth authorization in very limited matter.
+      See resources description for more details.
+    /generate-signature:
+      description: Verifies if signature has been generated correctly.
+      get:
+        description: |
+          Verifies signature used in Query Parameters.
+
+          Note: The `RSA-SHA1` signature method is not supported by this
+          endpoint because it requires private key to generate the signature.
+          In get request there's no way to provide the endponit with the
+          private key.
+        queryParameters:
+          type: OAuth1Parameters
+        responses:
+          200:
+            description: |
+              This status code determines that operation is successful meaning
+              the signature generated on the server side is the same as passed in
+              the query parameter.
+            body:
+              application/json:
+                type: OAuth1Response
+          400:
+            description: When operation failed for any reason
+            body:
+              application/json:
+                type: OAuth1SignatureResponseError
+      post:
+        description: |
+          Verifies signature used in either Authorization header or url encoded body.
+
+          If the request's content type is `www-urlencoded` and contains a body
+          the parameters source is body parameters. Otherwise it expect
+          OAuth1 parameters in the Authorization header.
+        headers:
+          Authorization:
+            description: |
+              If set it takes OAuth 1.0 parameters from header string.
+              It is error if both body and authorization headers are not set.
+            required: false
+        body:
+          application/x-www-form-urlencoded:
+            type: OAuth1Parameters
+            description: |
+              If body is present it will use it as a OAuth 1 parameters source.
+              It is an error to have body and `authorization` header both empty.
+        responses:
+          200:
+            description: |
+              This status code determines that operation is successful meaning
+              the signature generated on the server side is the same as passed in
+              the the header or in the bosy.
+            body:
+              application/json:
+                type: OAuth1Response
+          400:
+            description: When operation failed for any reason
+            body:
+              application/json:
+                type: OAuth1SignatureResponseError
+/cookies:
+  description: |
+    An endpoint that simulates cookies behaviors.
+    It can create, list or delete cookies by sending appropriate `set-cookie`
+    header to the client.
+  post:
+    displayName: Create a cookie(s)
+    description: |
+      Creates a cookie by sending `set-cookie` header to the client.
+      A list of cookies to be created is passed in the request body as a
+      list of key-value pairs of cookie name and the value.
+
+      Use `/cookies/set` endpoint if you need to set cookies via `GET`
+      request.
+    body:
+      application/json:
+        type: CookieList
+    responses:
+      200:
+        headers:
+          Set-Cookie:
+            description: A `set-cookie` header  with passed to the server list of cookies.
+        body:
+          type: BaseResponse
+  get:
+    displayName: List cookies
+    description: |
+      Lists cookies received by the server.
+    headers:
+      Cookie:
+        required: false
+        description: Cookies to be read.
+    responses:
+      200:
+        body:
+          type: CookieListResponse
+  delete:
+    displayName: Remove a cookie(s)
+    description: |
+      Removes a cookie by sending `set-cookie` header to the client.
+      A list of cookies to be deleted is passed in the request body as a
+      list of key-value pairs of cookie names and the values.
+
+      You do not need to provide cookie values in the request body as they will
+      be ignored by the server. Prepare a request body as:
+
+      ```
+      {
+        'cookieName': '',
+        'otherCookie': true // whatever value.
+      }
+      ```
+
+      Use `/cookies/delete` endpoint if you need to delete cookies via `GET`
+      request.
+    body:
+      application/json:
+        type: array
+        items: string
+        description: List of cookie names to delete
+    responses:
+      200:
+        headers:
+          Set-Cookie:
+            description: A `set-cookie` header  with passed to the server list of cookies.
+        body:
+          type: BaseResponse
+  /set:
+    get:
+      displayName: Create cookies
+      description: |
+        Creates a cookie by sending `set-cookie` header to the client.
+        A list of cookies to be created is passed in the request body as a
+        list of key-value pairs of cookie name and the value.
+
+        Use `POST /cookies` endpoint if you can use `POST` request.
+      queryParameters:
+        type: CookieList
+      responses:
+        200:
+          headers:
+            Set-Cookie:
+              description: A `set-cookie` header  with passed to the server list of cookies.
+          body:
+            type: BaseResponse
+  /delete:
+    get:
+      displayName: Remove cookies
+      description: |
+        Removes a cookie by sending `set-cookie` header to the client.
+        A list of cookies to be deleted is passed in the request body as a
+        list of key-value pairs of cookie names and the values.
+
+        You do not need to provide a cookie value as it will be ignored by the server.
+        The request should be similar to:
+
+        ```
+        DELETE /cookies?cookieName&otherCooke HTTP 1.1
+        ```
+
+        Use `DELETE /cookies` endpoint if you can use `DELETE` request.
+      queryParameters:
+        type: CookieList
+      responses:
+        200:
+          headers:
+            Set-Cookie:
+              description: A `set-cookie` header  with passed to the server list of cookies.
+          body:
+            type: BaseResponse

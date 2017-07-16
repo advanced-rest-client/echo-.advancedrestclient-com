@@ -1,0 +1,68 @@
+<!--
+@license
+Copyright 2016 The Advanced REST client authors <arc@mulesoft.com>
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations under
+the License.
+-->
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<dom-module id="login-page">
+  <template>
+    <style>
+    :host {
+      display: block;
+      padding: 10px;
+    }
+    </style>
+
+    <h1>Oauth 1 echo - login to the application</h1>
+
+    <iron-form id="form" allow-redirect>
+      <form method="post" action="/auth/oauth1/login">
+        <paper-input name="username" label="User name" type="text" value="arc"></paper-input>
+        <paper-input name="password" label="Password" type="password" value="passwd"></paper-input>
+
+        <paper-button raised on-tap="login">Log in</paper-button>
+      </form>
+    </iron-form>
+
+    <section class="login-hints card">
+      <p>Use one of the following test accounts:</p>
+      <ul>
+        <li>Username: arc, password: passwd</li>
+        <li>Username: joe, password: password</li>
+      </ul>
+    </section>
+  </template>
+
+  <script>
+    /**
+     * A page that log in user to a test account in the application.
+     * It is used by the OAuth endpoint.
+     *
+     * @customElement
+     * @polymer
+     */
+    class LoginPage extends Polymer.Element {
+      static get is() {
+        return 'login-page';
+      }
+
+      login() {
+        this.$.form.submit();
+      }
+    }
+
+    window.customElements.define(LoginPage.is, LoginPage);
+  </script>
+</dom-module>

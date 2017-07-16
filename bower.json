@@ -1,0 +1,34 @@
+{
+  "name": "echo.advancedrestclient.com",
+  "description": "An echo server for Advanced REST Client",
+  "main": "",
+  "authors": [
+    "Advanced Rest Client Authors"
+  ],
+  "license": "Apache Version 2.0",
+  "keywords": [
+    "ARC",
+    "Advanced Rest Client",
+    "echo server"
+  ],
+  "homepage": "https://advancedrestclient.com/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/bower_components/",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "app-layout": "PolymerElements/app-layout#^2.0.1",
+    "paper-styles": "PolymerElements/paper-styles#^2.0.0",
+    "app-route": "PolymerElements/app-route#^2.0.0",
+    "iron-pages": "PolymerElements/iron-pages#^2.0.0",
+    "paper-input": "PolymerElements/paper-input#^2.0.1",
+    "iron-form": "PolymerElements/iron-form#^2.0.0",
+    "paper-button": "PolymerElements/paper-button#^2.0.0",
+    "iron-ajax": "PolymerElements/iron-ajax#^2.0.2",
+    "iron-meta": "PolymerElements/iron-meta#^2.0.2"
+  }
+}

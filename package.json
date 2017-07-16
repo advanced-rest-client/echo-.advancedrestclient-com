@@ -1,0 +1,56 @@
+{
+  "name": "echo-.advancedrestclient-com",
+  "description": "Advanced REST Client echo service.",
+  "version": "0.0.1",
+  "private": true,
+  "license": "Apache Version 2.0",
+  "author": "Mulesoft Ltd",
+  "contributors": [
+    {
+      "name": "Pawel Psztyc",
+      "email": "pawel.psztyc@mulesoft.com"
+    }
+  ],
+  "engines": {
+    "node": "7.1.0"
+  },
+  "scripts": {
+    "start": "node ./bin/www",
+    "deploy": "gcloud app deploy app.yaml",
+    "monitor": "nodemon ./bin/www"
+  },
+  "semistandard": {
+    "globals": [
+      "after",
+      "afterEach",
+      "before",
+      "beforeEach",
+      "describe",
+      "it"
+    ]
+  },
+  "dependencies": {
+    "@google-cloud/debug-agent": "^2.1.2",
+    "@google-cloud/trace-agent": "^2.1.0",
+    "body-parser": "^1.16.0",
+    "connect-ensure-login": "0.1.x",
+    "cookie-parser": "1.4.3",
+    "crypto": "0.0.3",
+    "debug": "2.6.0",
+    "ejs": "^2.5.6",
+    "express": "4.14.1",
+    "express-busboy": "^5.0.0",
+    "express-session": "^1.15.3",
+    "express-winston": "^2.0.0",
+    "morgan": "1.8.0",
+    "node-fetch": "^1.6.3",
+    "oauth-1.0a": "^2.2.0",
+    "oauthorize": "^0.1.0",
+    "passport": "^0.3.2",
+    "passport-http-oauth": "jdormit/passport-http-oauth#master",
+    "passport-local": "0.1.x",
+    "serve-favicon": "2.3.2",
+    "uuid": "^3.0.1",
+    "winston": "^2.2.0"
+  }
+}

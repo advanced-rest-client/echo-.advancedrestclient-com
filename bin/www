@@ -29,7 +29,8 @@ const http = require('http');
 /**
  * Get port from environment and store in Express.
  */
-const port = normalizePort(process.env.PORT || 8080);
+const defaultPort = process.env.NODE_ENV === 'production' ? 80 : 8080;
+const port = normalizePort(process.env.PORT || defaultPort);
 app.set('port', port);
 
 /**
@@ -74,9 +75,7 @@ function onError(error) {
     throw error;
   }
 
-  const bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port;
+  const bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
   // handle specific listen errors with friendly messages
   switch (error.code) {

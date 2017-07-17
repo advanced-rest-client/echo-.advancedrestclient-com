@@ -8,7 +8,7 @@ const router = express.Router();
 class LetsEncryptRoute extends BaseRoute {
 
   get challengeResponse() {
-    return '._DW7L_TfipACEMVC7uKg7PeC6aIV1ON1GkYI5EvOTQ0';
+    return '.HdZTpNNrwlhcFxTbavemkZHfoxq9BLIVbSdkPnnlTXU';
   }
 
   constructor() {

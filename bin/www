@@ -29,7 +29,7 @@ const http = require('http');
 /**
  * Get port from environment and store in Express.
  */
-const defaultPort = process.env.NODE_ENV === 'production' ? 80 : 8080;
+const defaultPort = 8080; // 80 can be run by root only
 const port = normalizePort(process.env.PORT || defaultPort);
 app.set('port', port);
 

@@ -26,8 +26,6 @@ curl -s "https://storage.googleapis.com/signals-agents/logging/google-fluentd-in
 service google-fluentd restart &
 # [END logging]
 
-echo "Updating system."
-
 # Install dependencies from apt
 apt-get update
 apt-get install -yq ca-certificates git nodejs build-essential
@@ -40,11 +38,19 @@ ln -s /opt/nodejs/bin/npm /usr/bin/npm
 
 npm i -g pm2
 
+chmod +r -R /usr/lib/node_modules/pm2/
+
 # Get the application source code from the Google Cloud Repository.
 # git requires $HOME and it's not set during the startup script.
 export HOME=/root
 git config --global credential.helper gcloud.sh
-git clone https://github.com/advanced-rest-client/echo-advancedrestclient-com.git /opt/echo-app
+
+if [ ! -d /opt/echo-app ]; then
+  git clone https://github.com/advanced-rest-client/echo-advancedrestclient-com.git /opt/echo-app
+else
+  cd /opt/echo-app
+  git pull origin master
+fi
 
 # Create a nodeapp user. The application will run as this user.
 useradd -m -d /home/nodeapp nodeapp
@@ -52,8 +58,8 @@ chown -R nodeapp:nodeapp /opt/echo-app
 
 # Install app dependencies
 cd /opt/echo-app
-su nodeapp -c "npm install"
-su nodeapp -c "bower install"
+su nodeapp -c "npm update"
+su nodeapp -c "bower update"
 
 iptables -t mangle -A PREROUTING -p tcp --dport 80 -j MARK --set-mark 1
 iptables -t mangle -A PREROUTING -p tcp --dport 443 -j MARK --set-mark 1

@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === 'production') {
   const sslPort = normalizePort(process.env.SSL_PORT || defaultSslPort);
   const certStore = '/etc/letsencrypt/live/echo.advancedrestclient.com/';
   const privateKey  = fs.readFileSync(certStore + 'privkey.pem', 'utf8');
-  const certificate = fs.readFileSync(certStore + 'cert1.pem', 'utf8');
+  const certificate = fs.readFileSync(certStore + 'cert.pem', 'utf8');
   const credentials = {
     key: privateKey,
     cert: certificate

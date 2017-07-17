@@ -54,6 +54,7 @@ app.use(function(req, res, next) {
 
 app.use('/cookies', require('./routes/cookies'));
 app.use('/auth/oauth1', require('./routes/oauth1'));
+app.use('/.well-known/', require('./routes/letsencrypt'));
 
 app.set('x-powered-by', false);
 

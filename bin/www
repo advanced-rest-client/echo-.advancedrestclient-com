@@ -25,18 +25,23 @@
 const app = require('../app');
 const debug = require('debug')('express:server');
 const http = require('http');
-
+const https = require('https');
+const fs = require('fs');
 /**
  * Get port from environment and store in Express.
  */
-const defaultPort = 8080; // 80 can be run by root only
+const defaultPort = 8080;
+/**
+ * Application server is configured to route traffic from port 443 to port 8181.
+ * It is in server's start script that is run when server starts.
+ */
+const defaultSslPort = 8181;
 const port = normalizePort(process.env.PORT || defaultPort);
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
-
 const server = http.createServer(app);
 
 /**
@@ -45,6 +50,22 @@ const server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+if (process.env.NODE_ENV === 'production') {
+  const sslPort = normalizePort(process.env.SSL_PORT || defaultSslPort);
+  const certStore = '/etc/letsencrypt/live/echo.advancedrestclient.com/';
+  const privateKey  = fs.readFileSync(certStore + 'privkey.pem', 'utf8');
+  const certificate = fs.readFileSync(certStore + 'cert1.pem', 'utf8');
+  const credentials = {
+    key: privateKey,
+    cert: certificate
+  };
+  /**
+   * Create HTTP server.
+   */
+  const httpsServer = https.createServer(credentials, app);
+  httpsServer.listen(sslPort);
+}
 
 // [END server]
 

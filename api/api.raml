@@ -17,80 +17,9 @@ types:
       authorized:
         type: boolean
         description: Wherther or not the user is authenticated.
-  OAuth1Response:
-    type: BaseResponse
-    properties:
-      oauthParams:
-        type: object
-        description: Map of received OAuth parameters.
-  OAuth1SignatureResponseError:
-    type: OAuth1Response
-    description: Response when signature test failed
-    properties:
-      reason:
-        type: string
-        description: A reason message about why the operation failed.
-  OAuth1Parameters:
-    type: object
-    properties:
-      oauth_signature_method:
-        description: A method used to generate the signature.
-        displayName: Signature method
-        enum: [PLAINTEXT, HMAC-SHA1]
-        default: HMAC-SHA1
-      oauth_consumer_key:
-        type: string
-        displayName: Consumer key
-        description: A consumer key used to generate the signature
-      oauth_signature:
-        type: string
-        description: Generated signature.
-        displayName: Signature
-      oauth_consumer_secret:
-        type: string
-        displayName: Consumer secret
-        description: |
-          A consumer secret used to generate the signature.
-          This parameter is not a part of OAuth 1 spec and normally do not
-          appear in the query string or body. It only purpose is to generate the
-          signature to compare.
-        required: false
-      oauth_token:
-        type: string
-        displayName: Token
-        required: false
-        description: |
-          A token used to generate the signature. Should not be set otherwise.
-      oauth_callback:
-        type: string
-        required: false
-        description: |
-          A callback URL used with OAuth parameters.
-        displayName: Callback
-      oauth_timestamp:
-        type: number
-        description: Timestamp of the signatire
-        required: false
-        displayName: Timestamp
-      oauth_nonce:
-        required: false
-        type: string
-        description: OAuth 1 nonce
-        displayName: Nonce
-      oauth_version:
-        type: number
-        required: false
-        default: 1.0
-        description: |
-          This should be set only if it was used to generate the signature.
-        displayName: Version
-  CookieList:
-    type: object
-    description: |
-      A list of cookies. Keys are cookies `name`s and values are cookies
-      `value`s.
-  CookieListResponse:
-    type: [BaseResponse, CookieList]
+  OAuth1Parameters: !include types/oauth1-parameters.raml
+  CookieList: !include types/cookies-list.raml
+  CookieListResponse: [BaseResponse, CookieList]
 /auth:
   description: |
     An endpoint to test different authorization methods.
@@ -147,67 +76,19 @@ types:
               type: AuthorizationResponse
   /oauth1:
     description: |
-      Simulates a OAuth authorization in very limited matter.
-      See resources description for more details.
-    /generate-signature:
-      description: Verifies if signature has been generated correctly.
-      get:
-        description: |
-          Verifies signature used in Query Parameters.
-
-          Note: The `RSA-SHA1` signature method is not supported by this
-          endpoint because it requires private key to generate the signature.
-          In get request there's no way to provide the endponit with the
-          private key.
-        queryParameters:
-          type: OAuth1Parameters
-        responses:
-          200:
-            description: |
-              This status code determines that operation is successful meaning
-              the signature generated on the server side is the same as passed in
-              the query parameter.
-            body:
-              application/json:
-                type: OAuth1Response
-          400:
-            description: When operation failed for any reason
-            body:
-              application/json:
-                type: OAuth1SignatureResponseError
+      Simulates the OAuth 1 authorization server endpoints.
+    /request_token:
+      description: |
+        An endpoint to get a temporaty request token that should be used
+        to redirect user to the confirmation dialog.
       post:
         description: |
-          Verifies signature used in either Authorization header or url encoded body.
-
-          If the request's content type is `www-urlencoded` and contains a body
-          the parameters source is body parameters. Otherwise it expect
-          OAuth1 parameters in the Authorization header.
-        headers:
-          Authorization:
-            description: |
-              If set it takes OAuth 1.0 parameters from header string.
-              It is error if both body and authorization headers are not set.
-            required: false
+          Request for temporary request token for OAuth authorization.
+          This request requires valid signature with oauth parameters.
         body:
           application/x-www-form-urlencoded:
             type: OAuth1Parameters
-            description: |
-              If body is present it will use it as a OAuth 1 parameters source.
-              It is an error to have body and `authorization` header both empty.
-        responses:
-          200:
-            description: |
-              This status code determines that operation is successful meaning
-              the signature generated on the server side is the same as passed in
-              the the header or in the bosy.
-            body:
-              application/json:
-                type: OAuth1Response
-          400:
-            description: When operation failed for any reason
-            body:
-              application/json:
-                type: OAuth1SignatureResponseError
+
 /cookies:
   description: |
     An endpoint that simulates cookies behaviors.

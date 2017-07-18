@@ -33,6 +33,7 @@
     "@google-cloud/debug-agent": "^2.1.2",
     "@google-cloud/trace-agent": "^2.1.0",
     "body-parser": "^1.16.0",
+    "compression": "^1.7.0",
     "connect-ensure-login": "0.1.x",
     "cookie-parser": "1.4.3",
     "crypto": "0.0.3",

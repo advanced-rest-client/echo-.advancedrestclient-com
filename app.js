@@ -55,6 +55,7 @@ app.use(function(req, res, next) {
 app.use('/cookies', require('./routes/cookies'));
 app.use('/compression', require('./routes/compression'));
 app.use('/status', require('./routes/status'));
+app.use('/headers', require('./routes/headers'));
 app.use('/auth/oauth1', require('./routes/oauth1'));
 app.use('/.well-known/', require('./routes/letsencrypt'));
 

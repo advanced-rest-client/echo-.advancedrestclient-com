@@ -48,7 +48,8 @@ app.use(passport.session());
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   next();
 });
 
@@ -56,6 +57,7 @@ app.use('/cookies', require('./routes/cookies'));
 app.use('/compression', require('./routes/compression'));
 app.use('/status', require('./routes/status'));
 app.use('/headers', require('./routes/headers'));
+app.use('/auth/basic', require('./routes/basic-auth'));
 app.use('/auth/oauth1', require('./routes/oauth1'));
 app.use('/.well-known/', require('./routes/letsencrypt'));
 

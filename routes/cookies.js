@@ -23,7 +23,6 @@ class CookiesRoute extends BaseRoute {
 
   _onListCookies(req, res) {
     const result = new CookieListResponse(req.cookies);
-    console.log('Cookies: ', req.cookies);
     this.sendObject(res, result);
   }
 

@@ -4,6 +4,15 @@ version: v1
 baseUri: https://echo.advancedrestclient.com/
 mediaType: [application/json]
 
+traits:
+  RequestResponse:
+    responses:
+      200:
+        body:
+          application/json:
+            description: |
+              Successful response returns request data as a JSON object.
+            type: RequestDataResponse
 types:
   BaseResponse:
     type: object
@@ -19,7 +28,10 @@ types:
         description: Wherther or not the user is authenticated.
   OAuth1Parameters: !include types/oauth1-parameters.raml
   CookieList: !include types/cookies-list.raml
+  RequestDataResponse: !include types/request-data-response.raml
+  HeadersDataResponse: !include types/headers-data-response.raml
   CookieListResponse: [BaseResponse, CookieList]
+
 /auth:
   description: |
     An endpoint to test different authorization methods.
@@ -146,9 +158,7 @@ types:
       request.
     body:
       application/json:
-        type: array
-        items: string
-        description: List of cookie names to delete
+        type: CookieList
     responses:
       200:
         headers:
@@ -199,3 +209,74 @@ types:
               description: A `set-cookie` header  with passed to the server list of cookies.
           body:
             type: BaseResponse
+/compression:
+  description: |
+    An endpoint to test various compression types.
+  /gzip:
+    get:
+      is: [RequestResponse]
+      description: |
+        Generates a response that is GZipped. It compresses every response,
+        no matter the size of it (by default servers compresses responses
+        above set size).
+  /deflate:
+    get:
+      is: [RequestResponse]
+      description: |
+        Generates a response that is deflatted. It compresses every response,
+        no matter the size of it (by default servers compresses responses
+        above set size).
+/status:
+  description: Tests status codes responses.
+  /{code}:
+    uriParameters:
+      code:
+        type: integer
+        minimum: 200
+        maximum: 599
+        description: |
+          Valid status code, which is >= 200 and <= 599.
+          Other status codes are accepted by the endpoint but in general they
+          are invalid.
+/headers:
+  description: And endpoint to test HTTP headers
+  get:
+    description: Lists incomming headers from the request.
+    responses:
+      200:
+        body:
+          application/json:
+            type: HeadersDataResponse
+  post:
+    description: Sends headers to the client defined in the request body
+    body:
+      application/json:
+        type: HeadersDataResponse
+
+    responses:
+      200:
+        description: |
+          The response headers list contains headers set in the request
+          payload.
+
+          Note that some headers like `content-length` are alwayws set by the
+          server. The `content-type` header is always `application/json`.
+        body:
+          application/json:
+            type: HeadersDataResponse
+  /set:
+    get:
+      description: Sends headers to the client using `GET` method from query parameters.
+      queryParameters:
+        type: HeadersDataResponse
+      responses:
+        200:
+          description: |
+            The response headers list contains headers set in the request
+            payload.
+
+            Note that some headers like `content-length` are alwayws set by the
+            server. The `content-type` header is always `application/json`.
+          body:
+            application/json:
+              type: HeadersDataResponse

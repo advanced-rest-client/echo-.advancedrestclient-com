@@ -2,7 +2,7 @@
 
 const express = require('express');
 const {BaseRoute} = require('./base-route');
-const {RequestDatatResponse} = require('../models/request-data-response');
+const {RequestDataResponse} = require('../models/request-data-response');
 const compression = require('compression');
 
 const router = express.Router();
@@ -51,10 +51,10 @@ class CompressionRoute extends BaseRoute {
     }
     req.rawHeaders = req.rawHeaders || [];
     if (enc) {
-      for (let i = 0, len = req.rawHeaders.length; i < len; i+=2) {
+      for (let i = 0, len = req.rawHeaders.length; i < len; i += 2) {
         let h = req.rawHeaders[i];
         if (h && h.toLowerCase() === 'accept-encoding') {
-        	req.rawHeaders.splice(i, 2);
+          req.rawHeaders.splice(i, 2);
           break;
         }
       }
@@ -65,7 +65,7 @@ class CompressionRoute extends BaseRoute {
   }
 
   _onResponse(req, res) {
-    var result = new RequestDatatResponse(req);
+    var result = new RequestDataResponse(req);
     this.sendObject(res, result, 200);
   }
 }

@@ -14,7 +14,7 @@ class HeadersRoute extends BaseRoute {
   initRoute() {
     router.get('/', this._listIncommingHeadersGet.bind(this));
     router.post('/', this._listIncommingHeadersBody.bind(this));
-    router.get('/response', this._listIncommingHeadersQuery.bind(this));
+    router.get('/set', this._listIncommingHeadersQuery.bind(this));
   }
   // Headers from request
   _listIncommingHeadersGet(req, res) {
@@ -25,11 +25,21 @@ class HeadersRoute extends BaseRoute {
     var response = new HeadersDatatResponse(headers);
     this.sendObject(res, response, 200);
   }
+
+  __sendHeaders(res, headers) {
+    var response = new HeadersDatatResponse(headers);
+    for (let key in headers) {
+      res.set(key, headers[key]);
+    }
+    res.set('Content-Type', 'application/json');
+    res.status(200).send(response);
+  }
+
   // headers from request body
   _listIncommingHeadersBody(req, res) {
     try {
       const headers = req.body;
-      this.__listHeaders(res, headers);
+      this.__sendHeaders(res, headers);
     } catch (e) {
       this.sendError(res, 400, e.message);
     }
@@ -45,7 +55,7 @@ class HeadersRoute extends BaseRoute {
           headers[key] = req.query[key];
         }
       });
-      this.__listHeaders(res, headers);
+      this.__sendHeaders(res, headers);
     } catch (e) {
       this.sendError(res, 400, e.message);
     }

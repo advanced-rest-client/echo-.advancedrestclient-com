@@ -9,7 +9,7 @@ class HeadersDatatResponse extends BaseResponse{
    */
   constructor(headers) {
     super(true);
-    this.headers = headers || [];
+    this.headers = headers || {};
   }
 }
 

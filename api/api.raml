@@ -32,6 +32,11 @@ types:
   HeadersDataResponse: !include types/headers-data-response.raml
   CookieListResponse: [BaseResponse, CookieList]
 
+securitySchemes:
+  basic:
+    type: Basic Authentication
+    description: Basic authorization.
+
 /auth:
   description: |
     An endpoint to test different authorization methods.
@@ -42,6 +47,7 @@ types:
     For query parameters some information may be stored in server logs. Application nor the Owner are not using this information
     in any way, and this information is considered confidential.
   /basic/{username}/{password}:
+    securedBy: basic
     description: |
       Simulates a basic authorization by sending `www-authenticate` header to browser with `Basic` and realm values.
       The `username` and `password` are set as URI parameters
@@ -238,6 +244,10 @@ types:
           Valid status code, which is >= 200 and <= 599.
           Other status codes are accepted by the endpoint but in general they
           are invalid.
+    get:
+      description: |
+        Returns a response for given status `code`.
+        The response doesn't carry any body.
 /headers:
   description: And endpoint to test HTTP headers
   get:

@@ -46,10 +46,19 @@ app.use(session(sessionInit));
 app.use(passport.initialize());
 app.use(passport.session());
 
+const DEFAULT_CORS_HEADERS = 'Origin, X-Requested-With, Content-Type, Accept, Authorization';
+
+// CORS setup
 app.use(function(req, res, next) {
+  var requestedHeaders = req.get('Access-Control-Request-Headers');
+  var allowedHeaders;
+  if (requestedHeaders) {
+    allowedHeaders = requestedHeaders;
+  } else {
+    allowedHeaders = DEFAULT_CORS_HEADERS;
+  }
   res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Headers', allowedHeaders);
   next();
 });
 

@@ -20,7 +20,7 @@ const app = express();
 app.enable('trust proxy');
 app.disable('etag');
 
-var sessionInit = {
+const sessionInit = {
   secret: 'e146810e-6996-11e7-907b-a6006ad3dba0',
   resave: false,
   saveUninitialized: false,
@@ -34,6 +34,15 @@ app.use(cookieParser());
 app.use(bodyParser.json());
 // for parsing application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.text({type: () => {
+  return function(req) {
+    const ct = req.headers['content-type'];
+    if (ct === 'application/json' || ct === 'application/x-www-form-urlencoded') {
+      return false;
+    }
+    return true;
+  };
+}}));
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -50,8 +59,8 @@ const DEFAULT_CORS_HEADERS = 'Origin, X-Requested-With, Content-Type, Accept, Au
 
 // CORS setup
 app.use(function(req, res, next) {
-  var requestedHeaders = req.get('Access-Control-Request-Headers');
-  var allowedHeaders;
+  const requestedHeaders = req.get('Access-Control-Request-Headers');
+  let allowedHeaders;
   if (requestedHeaders) {
     allowedHeaders = requestedHeaders;
   } else {
@@ -69,6 +78,8 @@ app.use('/headers', require('./routes/headers'));
 app.use('/auth/basic', require('./routes/basic-auth'));
 app.use('/auth/oauth1', require('./routes/oauth1'));
 app.use('/.well-known/', require('./routes/letsencrypt'));
+app.use('/get', require('./routes/get'));
+app.use('/post', require('./routes/post'));
 
 app.set('x-powered-by', false);
 

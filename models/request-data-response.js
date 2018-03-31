@@ -31,6 +31,9 @@ class RequestDataResponse extends BaseResponse {
   _fromRequest(req) {
     this.headers = req.headers || {};
     this.method = req.method || 'unknown';
+    if (req.body) {
+      this.body = req.body;
+    }
   }
 }
 
